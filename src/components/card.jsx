@@ -1,8 +1,6 @@
 import "./card.css";
 import Card from 'react-bootstrap/Card';
 import { Container, Row, Col, Button } from "react-bootstrap";
-import { useState } from "react";
-
 
 function ProductCard({ imgSrc, title, description, price }) {
 
@@ -24,6 +22,9 @@ function ProductCard({ imgSrc, title, description, price }) {
                 body: JSON.stringify(product)
             });
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
             const data = await response.json();
 
             alert("« Le produit avec l'id " + data.id + " a été modifié ».")
@@ -80,23 +81,24 @@ function ProductCard({ imgSrc, title, description, price }) {
     return (
         <Card className="h-100">
             <Card.Img className="card-img" src={imgSrc} />
-            <Card.Body>
+            <Card.Body className="d-flex flex-column justify-content-between">
                 <Card.Title>{title}</Card.Title>
                 <Card.Text>{description}</Card.Text>
-                <Card.Text>{price}€</Card.Text>
-                <Container>
-                    <Row className="g-1"> {/* Aligns the buttons in a row */}
-                        <Col xs={12} sm={4}> {/* This ensures equal width columns */}
-                            <Button variant="primary" className="btn-sm" onClick={() => putProduct()}>Modifier produit</Button>
+                <Card.Text className="ms-auto">{price}€</Card.Text>
+                <Container className="p-0">
+                    <Row className="gap-1">
+                        <Col md={3} className="p-0 flex-grow-1">
+                            <Button variant="primary" className="btn-sm w-100" onClick={() => putProduct()}>Modifier<br></br>produit</Button>
                         </Col>
-                        <Col xs={12} sm={4}>
-                            <Button variant="secondary" className="btn-sm" onClick={() => patchProduct()}>Modifier prix</Button>
+                        <Col md={3} className="p-0 flex-grow-1">
+                            <Button variant="secondary" className="btn-sm w-100" onClick={() => patchProduct()}>Modifier <br></br>prix</Button>
                         </Col>
-                        <Col xs={12} sm={4}>
-                            <Button className="btn-sm" variant="danger" onClick={() => deleteProduct()}>Supprimer produit</Button>
+                        <Col md={3} className="p-0 flex-grow-1">
+                            <Button className="btn-sm w-100" variant="danger" onClick={() => deleteProduct()}>Supprimer<br></br>produit</Button>
                         </Col>
                     </Row>
                 </Container>
+
             </Card.Body>
         </Card>
     );
