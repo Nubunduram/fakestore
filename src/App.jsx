@@ -5,39 +5,58 @@ import { Button, Container, Row, Col } from "react-bootstrap";
 
 function App() {
   const [products, setProducts] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchProducts() {
-      const response = await fetch("https://fakestoreapi.com/products");
-      const data = await response.json();
-      setProducts(data);
+      try {
+        const response = await fetch('https://fakestoreapi.com/products');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
     }
-
     fetchProducts();
   }, []);
 
   async function postProduct() {
-    const product = {
-      id: 1,
-      title: "T-shirt Basique",
-      price: 15,
-      description: "Un t-shirt basique",
-      category: "t-shirt",
-      image: "http://example.com"
-    };
-    const response = await fetch("https://fakestoreapi.com/products", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json"
-      },
-      body: JSON.stringify(product)
-    });
+    try {
+      const product = {
+        id: 1,
+        title: "T-shirt Basique",
+        price: 15,
+        description: "Un t-shirt basique",
+        category: "t-shirt",
+        image: "http://example.com"
+      };
+      const response = await fetch("https://fakestoreapi.com/products", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify(product)
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    alert("« Le produit avec l'id " + data.id + "a été créé ».")
+      alert("Le produit avec l'id " + data.id + " a été créé.");
+    } catch (error) {
+      alert("Une erreur s'est produite : " + error.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
+  if (error) return <p>Erreur : {error}</p>;
+
+  if (loading) return <p>Chargement...</p>;
 
   return (
     <>
